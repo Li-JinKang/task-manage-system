@@ -1,44 +1,25 @@
 <script setup>
-import { ref, computed } from 'vue'
-// 引入子组件
+import { storeToRefs } from 'pinia'
+import { useTaskStore } from '@/stores/taskStore'
 import TaskHeader from '@/components/TaskHeader.vue'
 import TaskInput from '@/components/TaskInput.vue'
 import TaskFilter from '@/components/TaskFilter.vue'
 import TaskItem from '@/components/TaskItem.vue'
 
-// --- 数据状态 ---
-const tasks = ref([
-  { id: '1', title: '体验 Tailwind v4 新特性', isCompleted: false },
-  { id: '2', title: '掌握 Composition API', isCompleted: true }
-])
-const filter = ref('all')
-
-// --- 逻辑处理 ---
-const handleAddTask = (title) => {
-  tasks.value.unshift({ id: crypto.randomUUID(), title, isCompleted: false })
-}
-const handleRemoveTask = (id) => {
-  tasks.value = tasks.value.filter(t => t.id !== id)
-}
-const handleToggleTask = (id) => {
-  const task = tasks.value.find(t => t.id === id)
-  if (task) task.isCompleted = !task.isCompleted
-}
-
-// --- 计算属性 ---
-const filteredTasks = computed(() => {
-  if (filter.value === 'active') return tasks.value.filter(t => !t.isCompleted)
-  if (filter.value === 'completed') return tasks.value.filter(t => t.isCompleted)
-  return tasks.value
-})
+// 初始化仓库
+const taskStore = useTaskStore()
+// 使用 storeToRefs 保持数据的响应式解构
+// 这样在模板里可以直接用 filter 和 filteredTasks
+const { filter, filteredTasks } = storeToRefs(taskStore)
+const { addTask, removeTask, toggleTask } = taskStore
 </script>
 
 <template>
   <div class="py-12 px-4">
-    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200 border border-slate-100 overflow-hidden">
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
       <TaskHeader />
       <main class="p-6">
-        <TaskInput @add-task="handleAddTask" />
+        <TaskInput @add-task="addTask" />
         <TaskFilter v-model="filter" />
         <ul class="space-y-3">
           <TransitionGroup name="list">
@@ -46,8 +27,8 @@ const filteredTasks = computed(() => {
               v-for="task in filteredTasks"
               :key="task.id"
               :task="task"
-              @toggle="handleToggleTask"
-              @remove="handleRemoveTask"
+              @toggle="toggleTask"
+              @remove="removeTask"
             />
           </TransitionGroup>
         </ul>
