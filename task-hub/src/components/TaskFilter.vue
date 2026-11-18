@@ -1,4 +1,6 @@
 <script setup>
+// 定义 v-model，父组件传来的值会自动同步
+const modelValue = defineModel()
 const filters = ['all', 'active', 'completed']
 </script>
 
@@ -7,7 +9,11 @@ const filters = ['all', 'active', 'completed']
     <button
       v-for="f in filters"
       :key="f"
-      class="flex-1 py-1.5 text-xs font-bold rounded-lg capitalize text-slate-500"
+      @click="modelValue = f"
+      :class="[
+        'flex-1 py-1.5 text-xs font-bold rounded-lg transition-all capitalize',
+        modelValue === f ? 'bg-white text-brand shadow-sm' : 'text-slate-500'
+      ]"
     >
       {{ f }}
     </button>
