@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useTaskStore } from '@/stores/taskStore'
+import { useRouter } from 'vue-router' // 引入路由
 import TaskHeader from '@/components/TaskHeader.vue'
 import TaskInput from '@/components/TaskInput.vue'
 import TaskFilter from '@/components/TaskFilter.vue'
@@ -8,10 +9,17 @@ import TaskItem from '@/components/TaskItem.vue'
 
 // 初始化仓库
 const taskStore = useTaskStore()
+const router = useRouter()
 // 使用 storeToRefs 保持数据的响应式解构
 // 这样在模板里可以直接用 filter 和 filteredTasks
 const { filter, filteredTasks } = storeToRefs(taskStore)
 const { addTask, removeTask, toggleTask } = taskStore
+
+// 退出登录方法
+const handleLogout = () => {
+  localStorage.removeItem('isLoggedIn')
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -35,6 +43,12 @@ const { addTask, removeTask, toggleTask } = taskStore
         <div v-if="filteredTasks.length === 0" class="text-center py-12 text-slate-400 text-sm">
           暂无相关任务...
         </div>
+        <button
+          @click="handleLogout"
+          class="mt-8 w-full py-2 text-xs text-slate-400 hover:text-red-500 transition-colors"
+        >
+          退出当前账号
+        </button>
       </main>
     </div>
   </div>
