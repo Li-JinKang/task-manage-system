@@ -4,7 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 import viteCompression from 'vite-plugin-compression'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages 地址带仓库名，仅打包时使用子路径
+  base: command === 'build' ? '/task-manage-system/' : '/',
   plugins: [
     vue(),
     tailwindcss(),
@@ -30,4 +32,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

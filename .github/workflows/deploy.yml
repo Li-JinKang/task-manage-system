@@ -1,0 +1,30 @@
+name: Deploy TaskHub
+on:
+  push:
+    branches: [ main ] # 监听 main 分支的推送
+permissions:
+  contents: write # 允许向 gh-pages 分支推送
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: task-hub # 项目位于仓库子目录
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+          # history 路由下直接访问子路径会 404，用 index.html 兜底
+          cp dist/index.html dist/404.html
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: task-hub/dist # 打包产物目录
+          branch: gh-pages # 部署到这个分支
