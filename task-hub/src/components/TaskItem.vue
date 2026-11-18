@@ -11,7 +11,7 @@ const emit = defineEmits(['toggle', 'remove'])
 </script>
 
 <template>
-  <li class="group flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200 hover:bg-white transition-all">
+  <li v-memo="[task.id, task.isCompleted]" class="group flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200 hover:bg-white transition-all">
     <div class="flex items-center gap-3">
       <input
         type="checkbox"

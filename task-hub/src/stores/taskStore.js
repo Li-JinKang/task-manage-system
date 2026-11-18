@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
+import { useLocalStorage } from '@/composables/useLocalStorage'
 
 export const useTaskStore = defineStore('task-store', () => {
   // --- 1. 状态 (State) ---
-  // 尝试从 LocalStorage 读取初始值
-  const savedTasks = localStorage.getItem('my-tasks')
-  const tasks = ref(savedTasks ? JSON.parse(savedTasks) : [])
+  // 读取与自动持久化都交给 useLocalStorage
+  const tasks = useLocalStorage('my-tasks', [])
   const filter = ref('all')
 
   // --- 2. 派生状态 (Getters) ---
@@ -26,12 +26,6 @@ export const useTaskStore = defineStore('task-store', () => {
     const task = tasks.value.find(t => t.id === id)
     if (task) task.isCompleted = !task.isCompleted
   }
-
-  // --- 4. 持久化 (Persistence) ---
-  // 监听 tasks 的变化，一旦变化就写入 LocalStorage
-  watch(tasks, (newVal) => {
-    localStorage.setItem('my-tasks', JSON.stringify(newVal))
-  }, { deep: true }) // 深度监听数组内部对象的变化
 
   return {
     tasks,
